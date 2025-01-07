@@ -113,15 +113,43 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
+    ############################################################################################################################################################################
+    ############################################################################################################################################################################
+    ############################################################################################################################################################################
+
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
+        parts = args.split()
+        class_name = parts[0]
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+
+        atributes = {}
+
+        for part in parts[1:]:
+            if "=" in part:
+                key, value = part.split("=", 1)
+                if value.startswith('"') and value.endswith('"'):
+                    value.strip('"')
+                    value.replace('_', ' ')
+                    value.replace("\\\"", "\"")
+            elif "." in value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    continue
+
+            else:
+                try:
+                    value = int(value)
+                except ValueError:
+                    continue
+
+            atributes[key] = value
+
+
+        new_instance = HBNBCommand.classes[class_name](**atributes)
         storage.save()
         print(new_instance.id)
         storage.save()
