@@ -64,3 +64,4 @@ class FileStorage:
         for key, value in FileStorage.__objects.items():
             if value is obj:
                 del FileStorage.__objects[key]
+                break
