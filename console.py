@@ -118,51 +118,42 @@ class HBNBCommand(cmd.Cmd):
     ############################################################################################################################################################################
 
     def do_create(self, args):
-        """Create an object with parameters"""
-        if not args:
-            print("** class name missing **")
-            return
-
-        # Split the input into parts
+        """ Create an object of any class """
         parts = args.split()
         class_name = parts[0]
-
-        # Check if the class name exists
-        if class_name not in HBNB.classes:
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
-        # Dictionary to store the attributes
         attributes = {}
 
-        # Process each parameter
         for part in parts[1:]:
             if "=" in part:
-                key, value = part.split("=", 1)  # Split into key and value
-
-                # Process the value based on its type
-                if value.startswith('"') and value.endswith('"'):  # String
-                    value = value[1:-1]  # Remove surrounding quotes
-                    value = value.replace("_", " ")  # Replace underscores with spaces
-                    value = value.replace("\\\"", "\"")  # Unescape quotes
-                elif "." in value:  # Float
+                key, value = part.split("=", 1)
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1]  # Remove the quotes
+                    value = value.replace('_', ' ').replace("\\\"", "\"")  # Replace underscores and escaped quotes
+                elif "." in value:  # Handle float
                     try:
                         value = float(value)
                     except ValueError:
-                        continue  # Skip invalid float
-                else:  # Integer
+                        print(f"Invalid float value for {key}: {value}")
+                        continue
+                else:  # Handle integer
                     try:
                         value = int(value)
                     except ValueError:
-                        continue  # Skip invalid integer
+                        print(f"Invalid integer value for {key}: {value}")
+                        continue
 
-                # Add the processed key-value pair to the attributes dictionary
                 attributes[key] = value
 
-        # Create the object with the processed attributes
+        # Create the object
         new_instance = HBNBCommand.classes[class_name](**attributes)
         storage.save()
         print(new_instance.id)
+
+
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
