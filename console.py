@@ -3,13 +3,14 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models.__init__ import storage
+from models import storage
 from models.user import User
 from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import shlex
 import os
 
 
@@ -22,7 +23,7 @@ class HBNBCommand(cmd.Cmd):
     classes = {
                'BaseModel': BaseModel, 'User': User, 'Place': Place,
                'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review,
+               'Review': Review
               }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
@@ -74,7 +75,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] == '{' and pline[-1] =='}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -114,10 +115,6 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    ############################################################################################################################################################################
-    ############################################################################################################################################################################
-    ############################################################################################################################################################################
-
     def do_create(self, args):
         """ Create an object of any class"""
         n_args = args.split()
@@ -141,7 +138,6 @@ class HBNBCommand(cmd.Cmd):
         print(new_instance.id)
         if os.getenv('HBNB_TYPE_STORAGE') == "db":
             new_instance.save()
-
 
 
     def help_create(self):
