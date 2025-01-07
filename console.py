@@ -118,43 +118,51 @@ class HBNBCommand(cmd.Cmd):
     ############################################################################################################################################################################
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """Create an object with parameters"""
+        if not args:
+            print("** class name missing **")
+            return
+
+        # Split the input into parts
         parts = args.split()
         class_name = parts[0]
-        if class_name not in HBNBCommand.classes:
+
+        # Check if the class name exists
+        if class_name not in HBNB.classes:
             print("** class doesn't exist **")
             return
 
-        atributes = {}
+        # Dictionary to store the attributes
+        attributes = {}
 
+        # Process each parameter
         for part in parts[1:]:
             if "=" in part:
-                key, value = part.split("=", 1)
-                if value.startswith('"') and value.endswith('"'):
-                    value.strip('"')
-                    value.replace('_', ' ')
-                    value.replace("\\\"", "\"")
-            elif "." in value:
-                try:
-                    value = float(value)
-                except ValueError:
-                    continue
+                key, value = part.split("=", 1)  # Split into key and value
 
-            else:
-                try:
-                    value = int(value)
-                except ValueError:
-                    continue
+                # Process the value based on its type
+                if value.startswith('"') and value.endswith('"'):  # String
+                    value = value[1:-1]  # Remove surrounding quotes
+                    value = value.replace("_", " ")  # Replace underscores with spaces
+                    value = value.replace("\\\"", "\"")  # Unescape quotes
+                elif "." in value:  # Float
+                    try:
+                        value = float(value)
+                    except ValueError:
+                        continue  # Skip invalid float
+                else:  # Integer
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue  # Skip invalid integer
 
-            atributes[key] = value
+                # Add the processed key-value pair to the attributes dictionary
+                attributes[key] = value
 
-
-
-        new_instance = HBNBCommand.classes[class_name](**atributes)
+        # Create the object with the processed attributes
+        new_instance = HBNBCommand.classes[class_name](**attributes)
         storage.save()
         print(new_instance.id)
-        storage.save()
-
     def help_create(self):
         """ Help information for the create method """
         print("Creates a class of any type")
