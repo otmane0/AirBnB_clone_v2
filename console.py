@@ -3,14 +3,13 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models import storage
+from models.__init__ import storage
 from models.user import User
 from models.place import Place
 from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-import shlex
 import os
 
 
@@ -23,7 +22,7 @@ class HBNBCommand(cmd.Cmd):
     classes = {
                'BaseModel': BaseModel, 'User': User, 'Place': Place,
                'State': State, 'City': City, 'Amenity': Amenity,
-               'Review': Review
+               'Review': Review,
               }
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
     types = {
@@ -75,7 +74,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] =='}'\
+                    if pline[0] is '{' and pline[-1] is'}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -115,6 +114,10 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
+    ############################################################################################################################################################################
+    ############################################################################################################################################################################
+    ############################################################################################################################################################################
+
     def do_create(self, args):
         """ Create an object of any class"""
         n_args = args.split()
@@ -138,6 +141,7 @@ class HBNBCommand(cmd.Cmd):
         print(new_instance.id)
         if os.getenv('HBNB_TYPE_STORAGE') == "db":
             new_instance.save()
+
 
     def help_create(self):
         """ Help information for the create method """
@@ -219,11 +223,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -285,7 +289,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] == '\"':  # check for quoted arg
+            if args and args[0] is '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -293,10 +297,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] != ' ':
+            if not att_name and args[0] is not ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] == '\"':
+            if args[2] and args[2][0] is '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
@@ -327,66 +331,6 @@ class HBNBCommand(cmd.Cmd):
                 new_dict.__dict__.update({att_name: att_val})
 
         new_dict.save()  # save updates to file
-
-    def check_id(self, arg):
-        """
-        check if class name and id exist
-        """
-        args_list = shlex.split(arg)
-        if len(args_list) == 0:
-            print("** class name missing **")
-            return False
-        if args_list[0] not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return False
-        if len(args_list) < 2:
-            print("** instance id missing **")
-            return False
-        if args_list[0]+"."+args_list[1] in storage.all() or os.getenv('HBNB_TYPE_STORAGE') == "db":
-            return True
-        print("** no instance found **")
-
-    def check_attr(self, arg):
-        """
-        check if attribute name exist
-        """
-        args_list = shlex.split(arg)
-        if len(args_list) < 3:
-            print("** attribute name missing **")
-            return False
-        if len(args_list) < 4:
-            print("** value missing **")
-            return False
-        return True
-
-    def parse_value(self, value_str):
-        """Parse and cast the value to the appropriate type"""
-        try:
-            value = int(value_str)
-        except ValueError:
-            try:
-                value = float(value_str)
-            except ValueError:
-                value = value_str.strip('"')
-        return value
-
-    def do_update(self, arg, obj=None):
-        """update command that update an object"""
-        if self.check_id(arg):
-            if self.check_attr(arg):
-                args_list = shlex.split(arg)
-                if obj is None:
-                    obj = storage.all()[f"{args_list[0]}.{args_list[1]}"]
-                if hasattr(obj, args_list[2]) and os.getenv('HBNB_TYPE_STORAGE') != "db":
-                    try:
-                        value = type(getattr(obj, args_list[2]))(args_list[3])
-                        setattr(obj, args_list[2], value)
-                    except ValueError:
-                        pass
-                else:
-                    setattr(obj, args_list[2], self.parse_value(args_list[3]))
-                if os.getenv('HBNB_TYPE_STORAGE') != "db":
-                    obj.save()
 
     def help_update(self):
         """ Help information for the update class """
