@@ -60,7 +60,7 @@ class FileStorage:
         """Deete an object"""
 
         if obj is None:
-            pass
+            return
         for key, value in FileStorage.__objects.items():
             if value is obj:
                 del FileStorage.__objects[key]
