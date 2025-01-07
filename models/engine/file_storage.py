@@ -13,7 +13,7 @@ class FileStorage:
         if cls:
             filter_obj = {}
             for key, obj in FileStorage.__objects.items():
-                if isinstance(cls, obj):
+                if isinstance(obj, cls):
                     filter_obj[key] = obj
             return filter_obj
         else:
