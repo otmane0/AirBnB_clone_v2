@@ -13,7 +13,7 @@ declare -a dirs=(
 for dir in "${dirs[@]}"; do
   [ ! -d "$dir" ] && sudo mkdir -p "$dir" > /dev/null 2>&1
 done
-touch "/data/web_static/releases/test/index.html"
+echo -e "<html>\n\t<head>\n\t</head>\n\t<body>\n\t\tHolberton School\n\t</body>\n</html>" | sudo tee /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test/ /data/web_static/current
 
 sudo chown -R ubuntu:ubuntu /data/
