@@ -21,7 +21,7 @@ def do_pack():
     # Step 3: Create the .tgz archive
     result = local(f"tar -cvzf {archive_path} -C web_static .", capture=True)
     if result.succeeded:
-        return result
+        return archive_path
     else:
         return None
 
