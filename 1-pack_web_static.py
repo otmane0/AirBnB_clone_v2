@@ -1,32 +1,27 @@
 #!/usr/bin/python3
 """
-a Fabric script that generates a .tgz archive
+Fabric script that generates a .tgz archive from the web_static folder.
 """
 from fabric.api import local
 from datetime import datetime
 
 
 def do_pack():
-    """function do pack that generate .tgz"""
-    local("mkdir -p versions > /dev/null 2>&1")
+    """Generates a .tgz archive from web_static folder."""
+
+    # Step 1: Create the versions directory if it doesn’t exist
+    local("mkdir -p versions")
+
+    # Step 2: Generate a timestamp for the archive name
     now = datetime.now()
     timestamp = now.strftime("%Y%m%d%H%M%S")
-    archiv = f"web_static_{timestamp}.tgz"
-    archive_path = f"versions/{archiv}"
-    result = local(f"tar -cvzf {archive_path} -C ~/alx/AirBnB_clone_v2/web_static .", capture=True)
+    archive_name = f"web_static_{timestamp}.tgz"
+    archive_path = f"versions/{archive_name}"
 
+    # Step 3: Create the .tgz archive
+    result = local(f"tar -cvzf {archive_path} -C web_static .", capture=True)
     if result.succeeded:
-        return archive_path
+        return result
     else:
         return None
-
-
-
-# local	# execute a local command)
-# run	# execute a remote command on all specific hosts, user-level permissions)
-# sudo	# sudo a command on the remote server)
-# put	# copy over a local file to a remote destination)
-# get	# download a file from the remote server)
-# prompt	# prompt user with text and return the input (like raw_input))
-# reboot	# reboot the remote system, disconnect, and wait for wait seconds)
 
