@@ -18,40 +18,31 @@ def do_deploy(archive_path):
 
     try:
         # Extract filename without extension
-        file_name = archive_path.split("/")[-1]
-        file_no_ext = file_name.split(".")[0]  # web_static_XXXXXXXXXXXX
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]  # web_static_XXXXXXXXXXXX
 
         # Define paths
-        remote_path = f"/tmp/{file_name}"
-        release_path = f"/data/web_static/releases/{file_no_ext}"
+        path = "/data/web_static/releases/"
+
 
         # Upload archive to /tmp/ on the server
-        put(archive_path, remote_path)
+        put(archive_path, '/tmp/')
 
         # Create the release directory
-        run(f"sudo mkdir -p {release_path}")
+        run('mkdir -p {}{}/'.format(path, no_ext))
 
         # Extract the archive in the release directory
-        run(f"sudo tar -xzf {remote_path} -C {release_path}")
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
 
         # Remove the archive from /tmp/
-        run(f"sudo rm {remote_path}")
+        run('rm /tmp/{}'.format(file_n))
 
         # Move contents to correct location
-        run(f"sudo mv {release_path}/web_static/* {release_path}/")
-
-        # Remove the now-empty web_static directory
-        run(f"sudo rm -rf {release_path}/web_static")
-
-        # Delete old symbolic link
-        run("sudo rm -rf /data/web_static/current")
-
-        # Create new symbolic link
-        timestamp = archive_path[-18:-4]
-        run(f"sudo ln -s  /data/web_static/releases/\
-web_static_{timestamp}/ /data/web_static/current")
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
 
-    except Exception as e:
-        print(f"Deployment failed: {e}")
+    except:
         return False
