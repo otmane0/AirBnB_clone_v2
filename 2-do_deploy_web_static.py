@@ -24,7 +24,6 @@ def do_deploy(archive_path):
         # Define paths
         path = "/data/web_static/releases/"
 
-
         # Upload archive to /tmp/ on the server
         put(archive_path, '/tmp/')
 
@@ -39,10 +38,17 @@ def do_deploy(archive_path):
 
         # Move contents to correct location
         run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+
+        # Remove the now empty web_static directory
         run('rm -rf {}{}/web_static'.format(path, no_ext))
+
+        # Remove the current symbolic link
         run('rm -rf /data/web_static/current')
+
+        # Create a new symbolic link
         run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
+
         return True
 
-    except:
+    except Exception as e:
         return False
