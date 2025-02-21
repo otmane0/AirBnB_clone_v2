@@ -47,9 +47,9 @@ def do_deploy(archive_path):
         run("sudo rm -rf /data/web_static/current")
 
         # Create new symbolic link
-        run(f"sudo ln -s {release_path} /data/web_static/current")
-
-        print("New version deployed!")
+        timestamp = archive_path[-18:-4]
+        run(f"sudo ln -s  /data/web_static/releases/\
+web_static_{timestamp}/ /data/web_static/current")
         return True
 
     except Exception as e:
