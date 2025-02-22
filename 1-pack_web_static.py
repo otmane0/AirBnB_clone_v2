@@ -4,8 +4,9 @@ Fabric script that generates a .tgz archive from the web_static folder.
 """
 from fabric import Connection
 from datetime import datetime
+from invoke import task
 
-
+@task
 def do_pack():
     """Generates a .tgz archive from web_static folder."""
 
@@ -25,4 +26,3 @@ def do_pack():
         return archive_path
     else:
         return None
-
