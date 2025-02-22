@@ -1,24 +1,37 @@
 #!/usr/bin/python3
 """
-Fabric script that generates a .tgz archive from the web_static folder.
+Fabric script to generate a .tgz archive from the contents of the web_static folder.
 """
-from invoke import run
+
 from datetime import datetime
 import os
 
-
 def do_pack():
-    """Generates a .tgz archive from web_static folder."""
+    """
+    Generates a .tgz archive from the contents of the web_static folder.
 
-    # Step 1: Create the versions directory if it doesn’t exist
-    os.makedirs("versions", exist_ok=True)
+    Returns:
+        Archive path if successful, None otherwise.
+    """
+    try:
+        # Create the 'versions' directory if it doesn't exist
+        if not os.path.exists("versions"):
+            os.makedirs("versions")
 
-    # Step 2: Generate a timestamp for the archive name
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    archive_path = f"versions/web_static_{timestamp}.tgz"
+        # Generate the archive name using the current timestamp
+        now = datetime.now()
+        archive_name = "web_static_{}{}{}{}{}{}.tgz".format(
+            now.year, now.month, now.day, now.hour, now.minute, now.second
+        )
+        archive_path = "versions/{}".format(archive_name)
 
-    # Step 3: Create the .tgz archive
-    result = run(f"tar -cvzf {archive_path} web_static", hide=True, warn=True)
+        # Create the .tgz archive
+        result = os.system("tar -cvzf {} -C web_static .".format(archive_path))
 
-    # Step 4: Return the archive path if successful, otherwise None
-    return archive_path if result.ok else None
+        # Check if the archive was created successfully
+        if result == 0:  # tar command returns 0 on success
+            return archive_path
+        else:
+            return None
+    except Exception as e:
+        return None
