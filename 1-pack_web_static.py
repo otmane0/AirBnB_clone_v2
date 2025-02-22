@@ -16,7 +16,7 @@ def do_pack():
     try:
         # Create the 'versions' directory if it doesn't exist
         if not os.path.exists("versions"):
-            os.makedirs("versions")
+            os.system("mkdir -p versions")
 
         # Generate the archive name using the current timestamp
         now = datetime.now()
@@ -29,6 +29,7 @@ def do_pack():
         result = os.system("tar -cvzf {} -C web_static .".format(archive_path))
 
         # Check if the archive was created successfully
+
         if result == 0:  # tar command returns 0 on success
             return archive_path
         else:
