@@ -41,3 +41,5 @@ def do_pack():
 # Run the do_pack function
 if __name__ == "__main__":
     do_pack()
+    co = do_pack()
+    print (f"{co.archive_path}")
